@@ -3,6 +3,7 @@ cmake_minimum_required (VERSION 3.0.2)
 project (sunset)
 
 option (BUILD_TESTS "Build google tests" OFF)
+option (SUNSET_BUILD_SHARED "Build sunset as shared library" ON)
 
 file (GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 file (GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
@@ -14,8 +15,14 @@ set(PROJ_VERSION_MINOR 1)
 set(PROJ_VERSION_PATCH 4)
 set(PROJ_VERSION ${PROJ_VERSION_MAJOR}.${PROJ_VERSION_MINOR}.${PROJ_VERSION_PATCH} )
 
-add_library (${PROJECT_NAME} SHARED ${SOURCES})
-set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJ_VERSION} SOVERSION ${PROJ_VERSION_MAJOR} )
+if(SUNSET_BUILD_SHARED)
+    add_library (${PROJECT_NAME} SHARED ${SOURCES})
+    set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJ_VERSION} SOVERSION ${PROJ_VERSION_MAJOR} )
+else()
+    add_library (${PROJECT_NAME} STATIC ${SOURCES})
+endif()
+
+target_include_directories(${PROJECT_NAME} PUBLIC BEFORE "${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wno-long-long -pedantic)
 target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
